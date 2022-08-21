@@ -317,7 +317,7 @@ object hof{
        @tailrec
        def looper(iterator: List[T], buffer: String): String = {
          iterator match {
-           case List.::(head, tail) => looper(tail, buffer + del + head)
+           case List.::(head, tail) => looper(tail, buffer + del + head.toString)
            case List.Nil => buffer
          }
        }
