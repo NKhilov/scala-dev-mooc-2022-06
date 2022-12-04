@@ -257,7 +257,7 @@ object hof{
      */
 
     def zip[U](op: Option[U]): Option[(T, U)] = (this, op) match {
-      case (Option.Some(x), Option.Some(y)) => Option(x, y)
+      case (Option.Some(x), Option.Some(y)) => Option((x, y))
       case _ => Option.None
     }
 
