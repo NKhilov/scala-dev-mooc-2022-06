@@ -258,7 +258,7 @@ object hof{
 
     def zip[U](op: Option[U]): Option[(T, U)] = (this, op) match {
       case (Option.Some(x), Option.Some(y)) => Option(x, y)
-      case (Option.None, _) | (_, Option.None) => throw new Exception("One of Options is empty")
+      case _ => Option.None
     }
 
     /**
@@ -314,18 +314,15 @@ object hof{
       */
 
      def mkString(del: String): String = {
-       @tailrec
+              @tailrec
        def looper(iterator: List[T], buffer: String): String = {
          iterator match {
-           case List.::(head, tail) => looper(tail, buffer + del + head.toString)
+           case List.::(head, _@List.Nil) => buffer + del + head.toString
            case List.Nil => buffer
+           case List.::(head, tail) => looper(tail, buffer + del + head.toString)
          }
        }
-
-       this match {
-         case List.Nil => ""
-         case List.::(h, t) => looper(t, h.toString)
-       }
+       looper(this, "")
      }
 
      /**
@@ -333,12 +330,12 @@ object hof{
       * Реализовать метод reverse который позволит заменить порядок элементов в списке на противоположный
       */
      def reverse: List[T] = {
+
        @tailrec
        def looper(iterator: List[T], buffer: List[T]): List[T] = iterator match {
          case List.Nil => buffer
          case List.::(head, tail) => looper(tail, buffer.::(head))
        }
-
        looper(this, List.Nil)
      }
 
@@ -348,13 +345,13 @@ object hof{
       * Реализовать метод map для списка который будет применять некую ф-цию к элементам данного списка
       */
      def map[TT >: T](f: T => TT): List[TT] = {
+
        @tailrec
        def looper(iterator: List[T], buffer: List[TT]): List[TT] = iterator match {
          case List.Nil => List.Nil
          case List.::(head, tail) => looper(tail, buffer.::(f(head)))
        }
-
-         looper(this, List.Nil)
+         looper(this, List.Nil).reverse
      }
 
      /**
@@ -368,8 +365,7 @@ object hof{
          case List.::(head, tail) if f(head) => looper(tail, buffer.::(head))
          case List.::(_, tail) => looper(tail, buffer)
        }
-
-       looper(this, List.Nil)
+       looper(this, List.Nil).reverse
      }
 
 
@@ -387,7 +383,7 @@ object hof{
       * def printArgs(args: Int*) = args.foreach(println(_))
       */
      def apply[A](v: A*): List[A] = if(v.isEmpty) List.Nil
-      else new ::(v.head, apply(v.tail:_*))
+      else ::(v.head, apply(v.tail:_*))
 
    }
 
